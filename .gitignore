@@ -1,0 +1,10 @@
+# Generic files/folders
+__pycache__/
+.DS_Store
+
+# Project specific files/folders
+secrets.txt
+# Until I haven't made picoserver available via PyPi
+# I'll alway copy the latest version of picoserver
+# from https://github.com/kallahir/picoserver
+picoserver/

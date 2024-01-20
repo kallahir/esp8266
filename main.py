@@ -1,19 +1,23 @@
-from led.rgbled import RgbLed
-from utils.pin import PinNum
-from motor.servo import Servo
-from sensors.hcsr04 import HCSR04 
 import time
 
-rgb_led = RgbLed(PinNum.D3, PinNum.D2, PinNum.D1)
-distance_sensor = HCSR04(PinNum.D6, PinNum.D5)
-servo = Servo(PinNum.D7)
+from utils.pin import PinNum
+from motor.servo import Servo
+from picoserver.picoserver import PicoServer
 
-while True:
-    d = distance_sensor.distance_cm()
-    if d < 15.0:
-        servo.close()
-        rgb_led.cops(2)
-    elif d > 15.0:
-        servo.open()
-        rgb_led.green()
-    time.sleep(0.3)
+print("[starting]")
+
+servo = Servo(PinNum.D7)
+for value in (0, 180, 10):
+    servo.angle(value)
+    time.sleep(0.5)
+
+server = PicoServer()
+
+@server.route('/servo')
+def servo_angle(r):
+    if 'angle' not in r.args:
+        return server.respond(400, 'text/plain', 'required arg angle not provided')
+    servo.angle(int(r.args['angle']))
+    server.respond(200, 'text/plain', f'servo rotate to angle {r.args["angle"]}') 
+
+server.start()
